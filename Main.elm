@@ -8,6 +8,7 @@ import ElmTest.Runner.String  as StringRunner
 import ElmTest.Test exposing (..)
 import ElmTest.Assertion exposing (..)
 
+import Array
 import Matrix
 
 
@@ -59,12 +60,28 @@ map = suite "Map"
       <|  Matrix.map identity <| Matrix.repeat 2 2 1
   ]
 
+filter : Test
+filter = suite "Filter"
+  [ test "Keep ones" 
+      <| assertEqual (Array.repeat 2 1) 
+      <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
+  ]
+
+update : Test
+update = suite "Update"
+  [ test "Update first element" 
+      <| assertEqual (Just 5) 
+      <| Matrix.get 1 1 <| Matrix.update 1 1 (\x -> 5) <| Matrix.repeat 2 2 1
+  ]
+
 tests : Test
 tests = suite "Tests"
   [ get,
     set,
     fromList, 
-    map
+    map,
+    filter,
+    update
   ]
 
 results : String

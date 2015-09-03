@@ -55,9 +55,26 @@ set i j v matrix =
   in
     { matrix | data <- Array.set pos v matrix.data }
 
+{-|
+Update an element at x, y with the given update function
+If out of bounds, return the matrix unchanged
+-}
+update : Int -> Int -> (a -> a) -> Matrix a -> Matrix a
+update x y f matrix =
+  case get x y matrix of
+    Nothing -> matrix
+    Just v -> set x y (f v) matrix
+
 {-| 
 Apply a function of every element in the matrix
 -}
 map : (a -> b) -> Matrix a -> Matrix b
 map f matrix = 
   { matrix | data <- Array.map f matrix.data }
+
+{-| 
+Keep only elements that return True when passed to the given function f
+-}
+filter : (a -> Bool) -> Matrix a -> Array a
+filter f matrix = 
+  Array.filter f matrix.data

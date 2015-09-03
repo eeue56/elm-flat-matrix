@@ -1,4 +1,20 @@
-module Matrix where
+module Matrix (Matrix, repeat, fromList, get, set, update, map, indexedMap, filter) where
+{-| 
+A matrix implemention for Elm.
+Internally it uses a flat array for speed reasons.
+
+The matrix type
+@docs Matrix
+
+Creating a matrix
+@docs repeat, fromList
+
+Dealing with individual elements
+@docs get, set, update
+
+Applying functions
+@docs filter, map, indexedMap
+-}
 
 import Array exposing (Array)
 import List
@@ -16,7 +32,7 @@ Create a matrix of a given size x y with a default value of v
 repeat : Int -> Int -> a -> Matrix a 
 repeat x y v = {
   size = (x, y),
-  data = Array.repeat (x * y) v }
+  data = Array.repeat (x * y) v }  
   
 {-|
 Create a matrix from a list of lists.

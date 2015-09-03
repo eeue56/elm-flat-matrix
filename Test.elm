@@ -1,4 +1,4 @@
-module Main where
+module Test where
 
 import Text
 import Graphics.Element exposing (..)

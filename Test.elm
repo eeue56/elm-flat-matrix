@@ -88,6 +88,13 @@ map = suite "Map"
       <|  Matrix.map identity <| Matrix.repeat 2 2 1
   ]
 
+map2 : Test
+map2 = suite "Map2"
+  [ test "x + y" 
+      <| assertEqual (Just <| Matrix.repeat 2 2 2) 
+      <|  Matrix.map2 (\x y -> x + y) (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1)
+  ]
+
 indexedMap : Test
 indexedMap = suite "IndexedMap"
   [ test "basic index map" 
@@ -149,13 +156,14 @@ tests = suite "Tests"
   [ get,
     getRow,
     getColumn,
-    
+
     set,
     update,
 
     fromList, 
     
     map,
+    map2,
     filter,
     indexedMap,
 

@@ -1,4 +1,8 @@
-module Matrix (Matrix, repeat, fromList, get, getRow, getColumn, set, update, map, map2, indexedMap, filter) where
+module Matrix (Matrix, 
+  repeat, fromList, 
+  get, getRow, getColumn, 
+  set, update, concatRow, concatColumn,
+  map, map2, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
 Internally it uses a flat array for speed reasons.
@@ -13,7 +17,7 @@ Internally it uses a flat array for speed reasons.
 
 # Dealing with individual elements
 
-@docs get, set, update, getRow, getColumn
+@docs get, getRow, getColumn, set, update, concatRow, concatColumn
 
 # Applying functions
 @docs filter, map, map2, indexedMap
@@ -86,6 +90,18 @@ getColumn i matrix =
     if i >= width 
       then Nothing
       else Just <| Array.fromList <| List.map (\index -> case Array.get index matrix.data of Just v -> v) indices
+
+{-| Append a matrix to another matrix and return the result. Return nothing if the widths don't match -}
+concatColumn : Matrix a -> Matrix a -> Maybe (Matrix a) 
+concatColumn a b =
+  if fst a.size /= fst b.size then Nothing
+  else Just <| { a | size <- (fst a.size + fst b.size, snd a.size), data <- Array.append a.data b.data}
+
+{-| Append a matrix to another matrix and return the result. Return nothing if the widths don't match -}
+concatRow : Matrix a -> Matrix a -> Maybe (Matrix a) 
+concatRow a b =
+  if fst a.size /= fst b.size then Nothing
+  else Just <| { a | size <- (fst a.size, snd a.size + snd b.size), data <- Array.append a.data b.data}
 
 {-|
   Set a value at a given `i, j` in the matrix and return the new matrix

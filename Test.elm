@@ -88,6 +88,13 @@ map = suite "Map"
       <|  Matrix.map identity <| Matrix.repeat 2 2 1
   ]
 
+map2 : Test
+map2 = suite "Map2"
+  [ test "x + y" 
+      <| assertEqual (Just <| Matrix.repeat 2 2 2) 
+      <|  Matrix.map2 (\x y -> x + y) (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1)
+  ]
+
 indexedMap : Test
 indexedMap = suite "IndexedMap"
   [ test "basic index map" 
@@ -103,6 +110,20 @@ filter = suite "Filter"
   [ test "Keep ones" 
       <| assertEqual (Array.repeat 2 1) 
       <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
+  ]
+
+concatRow : Test
+concatRow = suite "Append row"
+  [ test "add two rows to the end" 
+      <| assertEqual (Just <| Matrix.repeat 1 4 2) 
+      <|  Matrix.concatRow (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
+  ]
+
+concatColumn : Test
+concatColumn = suite "Append column"
+  [ test "add a column to the end" 
+      <| assertEqual (Just <| Matrix.repeat 2 2 2) 
+      <|  Matrix.concatColumn (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
   ]
 
 add : Test
@@ -149,13 +170,17 @@ tests = suite "Tests"
   [ get,
     getRow,
     getColumn,
-    
+
+
+    concatRow,
+    concatColumn,
     set,
     update,
 
     fromList, 
     
     map,
+    map2,
     filter,
     indexedMap,
 

@@ -101,9 +101,25 @@ indexedMap = suite "IndexedMap"
       <| assertEqual (Matrix.repeat 1 1 0) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 1 1 1,
     test "(x,y) -> x + y" 
-      <| assertEqual (case Matrix.fromList [[0, 1, 1], [2, 2, 3]] of Just v -> v) 
-      <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1
+      <| assertEqual (case Matrix.fromList [[0, 1, 2], [1, 2, 3]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
+    test "(x,y) -> (x, y)" 
+      <| assertEqual (case Matrix.fromList [[(0,0), (1,0), (2, 0)], [(0, 1), (1,1), (2,1)]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1
   ]
+
+toIndexedArray : Test
+toIndexedArray = 
+  let 
+    testList : List ( (Int, Int), Int)
+    testList = [((0, 0), 0), ((1, 0), 1), ((2, 0), 2), ((0, 1), 1), ((1, 1), 2), ((2, 1), 3)] 
+  in
+    suite "toIndexedArray"
+      [ test "(x,y) -> x + y" 
+          <| assertEqual testList
+          <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1
+      ]
+
 
 filter : Test
 filter = suite "Filter"
@@ -196,6 +212,7 @@ tests = suite "Tests"
     map2,
     filter,
     indexedMap,
+    toIndexedArray,
 
     add,
     subtract,

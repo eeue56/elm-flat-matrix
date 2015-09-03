@@ -2,6 +2,7 @@ module Matrix (Matrix,
   repeat, fromList, 
   get, getRow, getColumn, 
   set, update, concatRow, concatColumn,
+  toIndexedArray,
   map, map2, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
@@ -28,7 +29,7 @@ Internally it uses a flat array for speed reasons.
 @docs getRow, getColumn
 
 # Applying functions
-@docs filter, map, map2, indexedMap
+@docs filter, map, map2, indexedMap, toIndexedArray
 -}
 
 import Array exposing (Array)
@@ -155,8 +156,8 @@ indexedMap f matrix =
   let
     f' i v =
       let
-        x = i % fst matrix.size
-        y = i // fst matrix.size
+        x = i % (fst matrix.size + 1)
+        y = i // (fst matrix.size + 1)
       in 
         f x y v
   in
@@ -168,3 +169,8 @@ indexedMap f matrix =
 filter : (a -> Bool) -> Matrix a -> Array a
 filter f matrix = 
   Array.filter f matrix.data
+
+{-| Convert a matrix to an indexed array
+-}
+toIndexedArray : Matrix a -> Array ((Int, Int), a)
+toIndexedArray matrix = (indexedMap (\x y v -> ((x, y), v)) matrix).data

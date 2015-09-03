@@ -19,16 +19,29 @@ fromList = suite "From list"
       <| assertEqual (2, 2) 
       <| case Matrix.fromList [[1, 1], [1, 1]] of Just v -> v.size,
     test "inequal size" 
-      <| assertEqual (3, 2) 
+      <| assertEqual (2, 3) 
       <| case Matrix.fromList [[1, 1], [1, 1], [3, 3]] of Just v -> v.size,
     test "inequal size" 
-      <| assertEqual (2, 3) 
+      <| assertEqual (3, 2) 
       <| case Matrix.fromList [[1, 1, 1], [1, 1, 1]] of Just v -> v.size,
     test "Non-consistent size" 
       <| assertEqual False 
       <| case Matrix.fromList [[1, 1, 1], [1, 1, 1, 5]] of 
         Just v -> True
         Nothing -> False
+  ]
+
+repeat : Test 
+repeat  = suite "Repeat"
+  [ test "equal size" 
+      <| assertEqual (2, 2) 
+      <| (\z -> z.size) <| Matrix.repeat 2 2 1,
+    test "inequal size" 
+      <| assertEqual (2, 3) 
+      <| (\z -> z.size) <| Matrix.repeat 2 3 1,
+    test "inequal size with 1, 100" 
+      <| assertEqual (1, 100) 
+      <| (\z -> z.size) <| Matrix.repeat 1 100 1
   ]
 
 get : Test 
@@ -43,19 +56,46 @@ get = suite "Get"
 
 getRow : Test 
 getRow = suite "GetRow"
-  [ test "get first row" 
+  [ test "square get first row" 
       <| assertEqual (Just <| Array.fromList [2, 3]) 
       <| Matrix.getRow 0  <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v,
-    test "get invalid range" 
+    test "square get last row" 
+      <| assertEqual (Just <| Array.fromList [1, 1]) 
+      <| Matrix.getRow 1  <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v,
+    test "non-square get last row 2x3" 
+      <| assertEqual (Just <| Array.fromList [4, 5]) 
+      <| Matrix.getRow 2  <| case Matrix.fromList [[2, 3], [1, 1], [4, 5]] of Just v -> v,
+    test "non-square get last row 3x2" 
+      <| assertEqual (Just <| Array.fromList [1, 1, 5]) 
+      <| Matrix.getRow 1  <| case Matrix.fromList [[2, 3, 4], [1, 1, 5]] of Just v -> v,
+    test "square get invalid range" 
       <| assertEqual (Nothing) 
-      <| Matrix.getRow 5 <| Matrix.repeat 1 1 1
+      <| Matrix.getRow 5 <| Matrix.repeat 1 1 1,
+    test "non-square get invalid range" 
+      <| assertEqual (Nothing) 
+      <| Matrix.getRow 5 <| Matrix.repeat 1 5 1
   ]
 
 getColumn : Test 
 getColumn = suite "GetColumn"
-  [ test "get first column" 
+  [ test "square get first column 2x2" 
       <| assertEqual (Just <| Array.fromList [2, 1]) 
       <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3], [1, 6]] of Just v -> v,
+    test "square get last column 2x2" 
+      <| assertEqual (Just <| Array.fromList [3, 6]) 
+      <| Matrix.getColumn 1  <| case Matrix.fromList [[2, 3], [1, 6]] of Just v -> v,
+    test "non-square get first column 3x2" 
+      <| assertEqual (Just <| Array.fromList [2, 1, 3]) 
+      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3], [1, 6], [3, 9]] of Just v -> v,
+    test "non-square get last column 3x2" 
+      <| assertEqual (Just <| Array.fromList [3, 6, 9]) 
+      <| Matrix.getColumn 1  <| case Matrix.fromList [[2, 3], [1, 6], [3, 9]] of Just v -> v,
+    test "non-square get first column 2x3" 
+      <| assertEqual (Just <| Array.fromList [2, 1]) 
+      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3, 3], [1, 6, 9]] of Just v -> v,
+    test "non-square get last column 2x3" 
+      <| assertEqual (Just <| Array.fromList [3, 9]) 
+      <| Matrix.getColumn 2  <| case Matrix.fromList [[2, 3, 3], [1, 6, 9]] of Just v -> v,
     test "get invalid range" 
       <| assertEqual (Nothing) 
       <| Matrix.getColumn 5 <| Matrix.repeat 1 1 1
@@ -100,10 +140,16 @@ indexedMap = suite "IndexedMap"
   [ test "basic index map" 
       <| assertEqual (Matrix.repeat 1 1 0) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 1 1 1,
-    test "(x,y) -> x + y" 
+    test "square (x,y) -> (x, y)" 
+      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)], [(0,2), (1,2), (2,2)]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 3 3 1,
+    test "non-square (x,y) -> (x, y)" 
+      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1,
+    test "non-square (x,y) -> x + y" 
       <| assertEqual (case Matrix.fromList [[0, 1, 2], [1, 2, 3]] of Just v -> v) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
-    test "(x,y) -> (x, y)" 
+    test "non-square (x,y) -> (x, y)" 
       <| assertEqual (case Matrix.fromList [[(0,0), (1,0), (2, 0)], [(0, 1), (1,1), (2,1)]] of Just v -> v) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1
   ]
@@ -113,11 +159,19 @@ toIndexedArray =
   let 
     testList : List ( (Int, Int), Int)
     testList = [((0, 0), 0), ((1, 0), 1), ((2, 0), 2), ((0, 1), 1), ((1, 1), 2), ((2, 1), 3)] 
+    testList' = [
+        ((0, 0), 0), ((1, 0), 1), ((2, 0), 2)
+      , ((0, 1), 1), ((1, 1), 2), ((2, 1), 3)
+      , ((0, 2), 2), ((1, 2), 3), ((2, 2), 4)
+      ] 
   in
     suite "toIndexedArray"
-      [ test "(x,y) -> x + y" 
+      [ test "(x,y) -> ((x, y), x + y) for non-square" 
           <| assertEqual testList
-          <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1
+          <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
+        test "(x,y) -> ((x, y), x + y) for square" 
+          <| assertEqual testList'
+          <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 3 3 1
       ]
 
 
@@ -206,7 +260,8 @@ tests = suite "Tests"
     set,
     update,
 
-    fromList, 
+    fromList,
+    repeat, 
     
     map,
     map2,

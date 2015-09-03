@@ -42,6 +42,14 @@ type alias Matrix a = {
   size: (Int, Int),
   data : Array (a) }
 
+{-| Width of a given matrix -}
+width : Matrix a -> Int
+width matrix = fst matrix.size 
+
+{-| Height of a given matrix -}
+height : Matrix a -> Int
+height matrix = snd matrix.size 
+
 {-| 
   Create a matrix of a given size `x y` with a default value of `v`
 -}
@@ -58,12 +66,15 @@ repeat x y v = {
 fromList : List (List a) -> Maybe (Matrix a)
 fromList list =
   let
-    size' = List.length list
-    nestedSize = List.length <| case List.head list of Just x -> x
-    allSame = List.isEmpty <| List.filter (\x -> List.length x /= nestedSize) list
+    -- the number of elements in the top level list is taken as height
+    height = List.length list
+    -- the number of elements in the first element is taken as the width
+    width = List.length <| case List.head list of Just x -> x
+    -- ensure that all "rows" are the same size
+    allSame = List.isEmpty <| List.filter (\x -> List.length x /= width) list
   in 
     if not allSame then Nothing
-    else Just { size = (size', nestedSize), data = Array.fromList <| List.concat list }
+    else Just { size = (width, height), data = Array.fromList <| List.concat list }
 
 {-|
   Get a value from a given `x y` and return `Just v` if it exists
@@ -81,10 +92,10 @@ get i j matrix =
 getRow : Int -> Matrix a -> Maybe (Array a)
 getRow j matrix =
   let 
-    start = (j * fst matrix.size)
-    end = start + snd matrix.size
+    start = (j * (width matrix) )
+    end = start + width matrix
   in
-    if end > (fst matrix.size * snd matrix.size) then Nothing
+    if end > ((width matrix) * (height matrix)) then Nothing
     else Just <| Array.slice start end matrix.data
 
 {-| Get a row at a given i
@@ -156,8 +167,8 @@ indexedMap f matrix =
   let
     f' i v =
       let
-        x = i % (fst matrix.size + 1)
-        y = i // (fst matrix.size + 1)
+        x = i % (width matrix) 
+        y = i // (width matrix)
       in 
         f x y v
   in

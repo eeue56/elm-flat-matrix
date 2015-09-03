@@ -73,6 +73,21 @@ map f matrix =
   { matrix | data <- Array.map f matrix.data }
 
 {-| 
+Apply a function, taking the (x, y) of every element in the matrix
+-}
+indexedMap : (Int -> Int -> a -> b) -> Matrix a -> Matrix b
+indexedMap f matrix = 
+  let
+    f' i v =
+      let
+        x = i % fst matrix.size
+        y = i // fst matrix.size
+      in 
+        f x y v
+  in
+    { matrix | data <- Array.indexedMap f' matrix.data }
+
+{-| 
 Keep only elements that return True when passed to the given function f
 -}
 filter : (a -> Bool) -> Matrix a -> Array a

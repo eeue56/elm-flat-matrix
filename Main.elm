@@ -50,6 +50,13 @@ set = suite "Set"
       <| Matrix.set 5 5 1 <| Matrix.repeat 1 1 1
   ]
 
+update : Test
+update = suite "Update"
+  [ test "Update first element" 
+      <| assertEqual (Just 5) 
+      <| Matrix.get 1 1 <| Matrix.update 1 1 (\x -> 5) <| Matrix.repeat 2 2 1
+  ]
+
 map : Test
 map = suite "Map"
   [ test "increment every value" 
@@ -60,6 +67,16 @@ map = suite "Map"
       <|  Matrix.map identity <| Matrix.repeat 2 2 1
   ]
 
+indexedMap : Test
+indexedMap = suite "IndexedMap"
+  [ test "basic index map" 
+      <| assertEqual (Matrix.repeat 1 1 0) 
+      <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 1 1 1,
+    test "(x,y) -> x + y" 
+      <| assertEqual (case Matrix.fromList [[0, 1, 1], [2, 2, 3]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1
+  ]
+
 filter : Test
 filter = suite "Filter"
   [ test "Keep ones" 
@@ -67,21 +84,18 @@ filter = suite "Filter"
       <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
   ]
 
-update : Test
-update = suite "Update"
-  [ test "Update first element" 
-      <| assertEqual (Just 5) 
-      <| Matrix.get 1 1 <| Matrix.update 1 1 (\x -> 5) <| Matrix.repeat 2 2 1
-  ]
 
 tests : Test
 tests = suite "Tests"
   [ get,
     set,
+    update,
+
     fromList, 
+    
     map,
     filter,
-    update
+    indexedMap
   ]
 
 results : String

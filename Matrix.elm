@@ -32,7 +32,6 @@ fromList list =
   in 
     if not allSame then Nothing
     else Just { size = (size', nestedSize), data = Array.fromList <| List.concat list }
-    
 
 {-|
 Get a value from a given x y and return Just v if it exists
@@ -55,3 +54,10 @@ set i j v matrix =
     pos = (i * fst matrix.size) + j
   in
     { matrix | data <- Array.set pos v matrix.data }
+
+{-| 
+Apply a function of every element in the matrix
+-}
+map : (a -> b) -> Matrix a -> Matrix b
+map f matrix = 
+  { matrix | data <- Array.map f matrix.data }

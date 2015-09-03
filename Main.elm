@@ -49,11 +49,22 @@ set = suite "Set"
       <| Matrix.set 5 5 1 <| Matrix.repeat 1 1 1
   ]
 
+map : Test
+map = suite "Map"
+  [ test "increment every value" 
+      <| assertEqual (Matrix.repeat 2 2 2) 
+      <|  Matrix.map (\x -> x + 1) <| Matrix.repeat 2 2 1,
+    test "identity" 
+      <| assertEqual (Matrix.repeat 2 2 1) 
+      <|  Matrix.map identity <| Matrix.repeat 2 2 1
+  ]
+
 tests : Test
 tests = suite "Tests"
   [ get,
     set,
-    fromList
+    fromList, 
+    map
   ]
 
 results : String

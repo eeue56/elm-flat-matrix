@@ -30,8 +30,8 @@ get i j matrix =
   in
     Array.get pos matrix.data
 
-set : a -> Int -> Int -> Matrix a -> Matrix a
-set v i j matrix = 
+set : Int -> Int -> a -> Matrix a -> Matrix a
+set i j v matrix = 
   let
     pos = (i * fst matrix.size) + j
   in

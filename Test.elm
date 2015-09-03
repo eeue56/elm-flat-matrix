@@ -10,6 +10,7 @@ import ElmTest.Assertion exposing (..)
 
 import Array
 import Matrix
+import Matrix.Extra
 
 
 fromList : Test
@@ -84,6 +85,18 @@ filter = suite "Filter"
       <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
   ]
 
+add : Test
+add = suite "Add"
+  [ test "Add uniform square matricies"
+      <| assertEqual (Just <| Matrix.repeat 2 2 3) 
+      <|  Matrix.Extra.add (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 2),
+    test "Add non-uniform square matricies"
+      <| assertEqual (Matrix.fromList [[3, 4], [4, 5]]) 
+      <|  Matrix.Extra.add (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+    test "Can't add two differently sized matricies"
+      <| assertEqual Nothing 
+      <|  Matrix.Extra.add (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
+  ]
 
 tests : Test
 tests = suite "Tests"
@@ -95,7 +108,9 @@ tests = suite "Tests"
     
     map,
     filter,
-    indexedMap
+    indexedMap,
+
+    add  
   ]
 
 results : String

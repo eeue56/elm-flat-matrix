@@ -78,16 +78,14 @@ getRow j matrix =
 -}
 getColumn : Int -> Matrix a -> Maybe (Array a)
 getColumn i matrix =
-  if i >= snd matrix.size then Nothing
-  else 
-    Just
-      <| Array.map (\x -> case x of Just v -> v)
-      <| Array.filter (\x -> case x of 
-        Just _ -> True
-        Nothing -> False) 
-      <| Array.indexedMap 
-        (\i' x -> 
-          if i' == i || i % i' /= 0 then Nothing else Just x) matrix.data
+  let 
+    width = fst matrix.size
+    height = snd matrix.size
+    indices = List.map (\x -> x*width + i) [0..(height-1)]
+  in 
+    if i >= width 
+      then Nothing
+      else Just <| Array.fromList <| List.map (\index -> case Array.get index matrix.data of Just v -> v) indices
 
 {-|
   Set a value at a given `i, j` in the matrix and return the new matrix

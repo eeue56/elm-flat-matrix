@@ -3,16 +3,19 @@ module Matrix (Matrix, repeat, fromList, get, set, update, map, indexedMap, filt
 A matrix implemention for Elm.
 Internally it uses a flat array for speed reasons.
 
-The matrix type
+# The matrix type
+
 @docs Matrix
 
-Creating a matrix
+# Creating a matrix
+
 @docs repeat, fromList
 
-Dealing with individual elements
+# Dealing with individual elements
+
 @docs get, set, update
 
-Applying functions
+# Applying functions
 @docs filter, map, indexedMap
 -}
 

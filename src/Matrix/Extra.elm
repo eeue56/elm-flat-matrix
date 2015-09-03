@@ -1,8 +1,8 @@
-module Matrix.Extra where
+module Matrix.Extra (add, subtract, hadamard, (.*)) where
 {-| Extra methods for Matricies
 
 # Element-wise computation
-@docs add, subtract, hadamard
+@docs add, subtract, hadamard, (.*)
 
 -}
 import Matrix exposing (Matrix, map2)
@@ -27,3 +27,9 @@ take the product of every corresponding element in two matricies and return the 
 -}
 hadamard : Matrix number -> Matrix number -> Maybe (Matrix number)
 hadamard a b = map2 (*) a b
+
+{-|
+element wise multiplication 
+-}
+(.*) : Matrix number -> Matrix number -> Maybe (Matrix number)
+(.*) = hadamard

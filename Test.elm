@@ -144,33 +144,43 @@ indexedMap = suite "IndexedMap"
       <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)], [(0,2), (1,2), (2,2)]] of Just v -> v) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 3 3 1,
     test "non-square (x,y) -> (x, y)" 
-      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)]] of Just v -> v) 
+      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0)], [(0, 1) ,(1,1)], [(0,2), (1,2)]] of Just v -> v) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1,
     test "non-square (x,y) -> x + y" 
-      <| assertEqual (case Matrix.fromList [[0, 1, 2], [1, 2, 3]] of Just v -> v) 
+      <| assertEqual (case Matrix.fromList [[0, 1], [1, 2], [2, 3]] of Just v -> v) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
     test "non-square (x,y) -> (x, y)" 
-      <| assertEqual (case Matrix.fromList [[(0,0), (1,0), (2, 0)], [(0, 1), (1,1), (2,1)]] of Just v -> v) 
-      <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1
+      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)]] of Just v -> v) 
+      <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 3 2 1
   ]
 
 toIndexedArray : Test
 toIndexedArray = 
   let 
-    testList : List ( (Int, Int), Int)
-    testList = [((0, 0), 0), ((1, 0), 1), ((2, 0), 2), ((0, 1), 1), ((1, 1), 2), ((2, 1), 3)] 
-    testList' = [
+    twoByThreeXAndY : List ( (Int, Int), Int)
+    twoByThreeXAndY = 
+      [((0, 0), 0), ((1, 0), 1), 
+       ((0, 1), 1), ((1, 1), 2), 
+       ((0, 2), 2), ((1, 2), 3)] 
+    threeByThreeXAndY = [
         ((0, 0), 0), ((1, 0), 1), ((2, 0), 2)
       , ((0, 1), 1), ((1, 1), 2), ((2, 1), 3)
       , ((0, 2), 2), ((1, 2), 3), ((2, 2), 4)
       ] 
+    twoByThreeOnes = 
+      [((0, 0), 1), ((1, 0), 1), 
+       ((0, 1), 1), ((1, 1), 1), 
+       ((0, 2), 1), ((1, 2), 1)] 
   in
     suite "toIndexedArray"
-      [ test "(x,y) -> ((x, y), x + y) for non-square" 
-          <| assertEqual testList
+      [ test "(x,y) -> ((x, y), x + y) for non-square 2x3" 
+          <| assertEqual twoByThreeXAndY
           <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
-        test "(x,y) -> ((x, y), x + y) for square" 
-          <| assertEqual testList'
+        test "(x,y) -> ((x, y), x + y) for non-square 2x3" 
+          <| assertEqual twoByThreeOnes
+          <|  Array.toList <| Matrix.toIndexedArray <| Matrix.repeat 2 3 1,
+        test "(x,y) -> ((x, y), x + y) for square 3x3" 
+          <| assertEqual threeByThreeXAndY
           <|  Array.toList <| Matrix.toIndexedArray <| Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 3 3 1
       ]
 

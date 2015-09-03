@@ -17,7 +17,15 @@ Internally it uses a flat array for speed reasons.
 
 # Dealing with individual elements
 
-@docs get, getRow, getColumn, set, update, concatRow, concatColumn
+@docs get, set, update 
+
+# Appending to an Matrix
+
+@docs concatRow, concatColumn
+
+# Get rows/columns
+
+@docs getRow, getColumn
 
 # Applying functions
 @docs filter, map, map2, indexedMap

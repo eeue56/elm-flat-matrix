@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1",
+    "version": "1.1.0",
     "summary": "A matrix implemention in Elm using flat-arrays",
     "repository": "https://github.com/eeue56/elm-flat-matrix.git",
     "license": "BSD3",
@@ -7,7 +7,8 @@
         "src"
     ],
     "exposed-modules": [
-        "Matrix"
+        "Matrix",
+        "Matrix.Extra"
     ],
     "dependencies": {
         "deadfoxygrandpa/Elm-Test": "1.0.4 <= v < 2.0.0",

@@ -1,5 +1,10 @@
 module Matrix.Extra where
+{-| Extra methods for Matricies
 
+# Element-wise computation
+@docs add, subtract, hadamard
+
+-}
 import Matrix exposing (Matrix, map2)
 import Array exposing (fromList, toList)
 

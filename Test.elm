@@ -49,6 +49,18 @@ get = suite "Get"
   [ test "get first" 
       <| assertEqual (Just 1) 
       <| Matrix.get 0 0 <| Matrix.repeat 1 1 1,
+    test "get from a bigger matrix (500 x 500)" 
+      <| assertEqual (Just 1) 
+      <| Matrix.get 24 50 <| Matrix.repeat 500 500 1,
+    test "get from a bigger matrix (500 x 500)" 
+      <| assertEqual (Just 1) 
+      <| Matrix.get 67 124 <| Matrix.repeat 500 500 1,
+    test "get from a huge matrix (500 x 500)" 
+      <| assertEqual (Just 567) 
+      <| Matrix.get 24 50 <| Matrix.set 24 50 567 <| Matrix.repeat 500 500 1,
+    test "get from a huge matrix (500 x 500)" 
+      <| assertEqual (Just 567) 
+      <| Matrix.get 399 432 <| Matrix.set 399 432 567 <| Matrix.repeat 500 500 1,
     test "get invalid range" 
       <| assertEqual (Nothing) 
       <| Matrix.get 1 2 <| Matrix.repeat 1 1 1

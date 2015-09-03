@@ -112,6 +112,20 @@ filter = suite "Filter"
       <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
   ]
 
+concatRow : Test
+concatRow = suite "Append row"
+  [ test "add two rows to the end" 
+      <| assertEqual (Just <| Matrix.repeat 1 4 2) 
+      <|  Matrix.concatRow (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
+  ]
+
+concatColumn : Test
+concatColumn = suite "Append column"
+  [ test "add a column to the end" 
+      <| assertEqual (Just <| Matrix.repeat 2 2 2) 
+      <|  Matrix.concatColumn (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
+  ]
+
 add : Test
 add = suite "Add"
   [ test "Add uniform square matricies"
@@ -157,6 +171,9 @@ tests = suite "Tests"
     getRow,
     getColumn,
 
+
+    concatRow,
+    concatColumn,
     set,
     update,
 

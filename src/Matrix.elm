@@ -1,18 +1,21 @@
-module Matrix (Matrix, repeat, fromList, get, set, update, map, indexedMap, filter) where
+module Matrix (Matrix, repeat, fromList, get, getRow, set, update, map, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
 Internally it uses a flat array for speed reasons.
 
-The matrix type
+# The matrix type
+
 @docs Matrix
 
-Creating a matrix
+# Creating a matrix
+
 @docs repeat, fromList
 
-Dealing with individual elements
-@docs get, set, update
+# Dealing with individual elements
 
-Applying functions
+@docs get, set, update, getRow
+
+# Applying functions
 @docs filter, map, indexedMap
 -}
 
@@ -27,7 +30,7 @@ type alias Matrix a = {
   data : Array (a) }
 
 {-| 
-  Create a matrix of a given size x y with a default value of v
+  Create a matrix of a given size `x y` with a default value of `v`
 -}
 repeat : Int -> Int -> a -> Matrix a 
 repeat x y v = {
@@ -36,7 +39,7 @@ repeat x y v = {
   
 {-|
   Create a matrix from a list of lists.
-  If the lists within the list are not consistently sized, return Nothing
+  If the lists within the list are not consistently sized, return `Nothing`
   Otherwise return a matrix with the size as the size of the outer and nested lists
 -}
 fromList : List (List a) -> Maybe (Matrix a)
@@ -50,8 +53,8 @@ fromList list =
     else Just { size = (size', nestedSize), data = Array.fromList <| List.concat list }
 
 {-|
-  Get a value from a given x y and return Just v if it exists
-  Otherwise Nothing
+  Get a value from a given `x y` and return `Just v` if it exists
+  Otherwise `Nothing`
 -}
 get : Int -> Int -> Matrix a  -> Maybe a
 get i j matrix = 
@@ -60,9 +63,20 @@ get i j matrix =
   in
     Array.get pos matrix.data
 
+{-| Get a row at a given j
+-}
+getRow : Int -> Matrix a -> Maybe (Array a)
+getRow j matrix =
+  let 
+    start = (j * fst matrix.size)
+    end = start + snd matrix.size
+  in
+    if end > (fst matrix.size * snd matrix.size) then Nothing
+    else Just <| Array.slice start end matrix.data
+
 {-|
-  Set a value at a given i, j in the matrix and return the new matrix
-  If the i, j is out of bounds then return the unmodified matrix
+  Set a value at a given `i, j` in the matrix and return the new matrix
+  If the `i, j` is out of bounds then return the unmodified matrix
 -}
 set : Int -> Int -> a -> Matrix a -> Matrix a
 set i j v matrix = 
@@ -72,7 +86,7 @@ set i j v matrix =
     { matrix | data <- Array.set pos v matrix.data }
 
 {-|
-  Update an element at x, y with the given update function
+  Update an element at `x, y` with the given update function
   If out of bounds, return the matrix unchanged
 -}
 update : Int -> Int -> (a -> a) -> Matrix a -> Matrix a
@@ -89,7 +103,7 @@ map f matrix =
   { matrix | data <- Array.map f matrix.data }
 
 {-| 
-  Apply a function, taking the (x, y) of every element in the matrix
+  Apply a function, taking the `x, y` of every element in the matrix
 -}
 indexedMap : (Int -> Int -> a -> b) -> Matrix a -> Matrix b
 indexedMap f matrix = 
@@ -104,7 +118,7 @@ indexedMap f matrix =
     { matrix | data <- Array.indexedMap f' matrix.data }
 
 {-| 
-  Keep only elements that return True when passed to the given function f
+  Keep only elements that return `True` when passed to the given function f
 -}
 filter : (a -> Bool) -> Matrix a -> Array a
 filter f matrix = 

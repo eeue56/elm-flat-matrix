@@ -41,6 +41,16 @@ get = suite "Get"
       <| Matrix.get 1 2 <| Matrix.repeat 1 1 1
   ]
 
+getRow : Test 
+getRow = suite "GetRow"
+  [ test "get first row" 
+      <| assertEqual (Just <| Array.fromList [2, 3]) 
+      <| Matrix.getRow 0  <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v,
+    test "get invalid range" 
+      <| assertEqual (Nothing) 
+      <| Matrix.getRow 5 <| Matrix.repeat 1 1 1
+  ]
+
 set : Test
 set = suite "Set"
   [ test "Set first" 
@@ -127,6 +137,7 @@ hadamard = suite "Hadamard"
 tests : Test
 tests = suite "Tests"
   [ get,
+    getRow,
     set,
     update,
 

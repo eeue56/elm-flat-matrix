@@ -51,6 +51,16 @@ getRow = suite "GetRow"
       <| Matrix.getRow 5 <| Matrix.repeat 1 1 1
   ]
 
+getColumn : Test 
+getColumn = suite "GetColumn"
+  [ test "get first column" 
+      <| assertEqual (Just <| Array.fromList [2, 1]) 
+      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3], [1, 6]] of Just v -> v,
+    test "get invalid range" 
+      <| assertEqual (Nothing) 
+      <| Matrix.getColumn 5 <| Matrix.repeat 1 1 1
+  ]
+
 set : Test
 set = suite "Set"
   [ test "Set first" 
@@ -138,6 +148,8 @@ tests : Test
 tests = suite "Tests"
   [ get,
     getRow,
+    getColumn,
+    
     set,
     update,
 

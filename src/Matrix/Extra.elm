@@ -1,12 +1,9 @@
 module Matrix.Extra where
 
-import Matrix exposing (Matrix)
+import Matrix exposing (Matrix, map2)
 import Array exposing (fromList, toList)
-import List exposing (map2)
 
-map2 f a b = if a.size == b.size 
-                then Just { a | data <- Array.fromList <| List.map2 f (Array.toList a.data) (Array.toList b.data) }
-                else Nothing
+
 
 {-|
 add two matricies together element by element and return the result

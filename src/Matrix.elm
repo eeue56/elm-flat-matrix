@@ -1,4 +1,4 @@
-module Matrix (Matrix, repeat, fromList, get, getRow, set, update, map, indexedMap, filter) where
+module Matrix (Matrix, repeat, fromList, get, getRow, getColumn, set, update, map, map2, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
 Internally it uses a flat array for speed reasons.
@@ -13,10 +13,10 @@ Internally it uses a flat array for speed reasons.
 
 # Dealing with individual elements
 
-@docs get, set, update, getRow
+@docs get, set, update, getRow, getColumn
 
 # Applying functions
-@docs filter, map, indexedMap
+@docs filter, map, map2, indexedMap
 -}
 
 import Array exposing (Array)
@@ -74,6 +74,21 @@ getRow j matrix =
     if end > (fst matrix.size * snd matrix.size) then Nothing
     else Just <| Array.slice start end matrix.data
 
+{-| Get a row at a given i
+-}
+getColumn : Int -> Matrix a -> Maybe (Array a)
+getColumn i matrix =
+  if i >= snd matrix.size then Nothing
+  else 
+    Just
+      <| Array.map (\x -> case x of Just v -> v)
+      <| Array.filter (\x -> case x of 
+        Just _ -> True
+        Nothing -> False) 
+      <| Array.indexedMap 
+        (\i' x -> 
+          if i' == i || i % i' /= 0 then Nothing else Just x) matrix.data
+
 {-|
   Set a value at a given `i, j` in the matrix and return the new matrix
   If the `i, j` is out of bounds then return the unmodified matrix
@@ -101,6 +116,14 @@ update x y f matrix =
 map : (a -> b) -> Matrix a -> Matrix b
 map f matrix = 
   { matrix | data <- Array.map f matrix.data }
+
+
+{-| Apply a function to two matricies at once
+-}
+map2 : (a -> b -> c) -> Matrix a -> Matrix b -> Maybe (Matrix c)
+map2 f a b = if a.size == b.size 
+                then Just { a | data <- Array.fromList <| List.map2 f (Array.toList a.data) (Array.toList b.data) }
+                else Nothing
 
 {-| 
   Apply a function, taking the `x, y` of every element in the matrix

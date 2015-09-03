@@ -165,6 +165,19 @@ hadamard = suite "Hadamard"
       <|  Matrix.Extra.hadamard (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
   ]
 
+power : Test 
+power = suite "power"
+  [ test "power uniform square matricies"
+      <| assertEqual (Just <| Matrix.repeat 2 2 1) 
+      <|  Matrix.Extra.power (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
+    test "power non-uniform square matricies"
+      <| assertEqual (Matrix.fromList [[1, 4], [4, 9]]) 
+      <|  Matrix.Extra.power (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+    test "Can't power two differently sized matricies"
+      <| assertEqual Nothing 
+      <|  Matrix.Extra.power (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
+  ]
+
 tests : Test
 tests = suite "Tests"
   [ get,
@@ -186,7 +199,8 @@ tests = suite "Tests"
 
     add,
     subtract,
-    hadamard
+    hadamard,
+    power
   ]
 
 results : String

@@ -1,8 +1,14 @@
-module Matrix.Extra (add, subtract, hadamard, (.*)) where
+module Matrix.Extra (
+    add, subtract, 
+    hadamard, (.*),
+    power, (.^)) where
 {-| Extra methods for Matricies
 
 # Element-wise computation
-@docs add, subtract, hadamard, (.*)
+@docs add, subtract, hadamard, power
+
+# Syntax aliases
+@docs (.*), (.^) 
 
 -}
 import Matrix exposing (Matrix, map2)
@@ -29,7 +35,19 @@ hadamard : Matrix number -> Matrix number -> Maybe (Matrix number)
 hadamard a b = map2 (*) a b
 
 {-|
+element-wise power of elements
+-}
+power : Matrix number -> Matrix number -> Maybe (Matrix number)
+power a b = map2 (^) a b
+
+{-|
 element wise multiplication 
 -}
 (.*) : Matrix number -> Matrix number -> Maybe (Matrix number)
 (.*) = hadamard
+
+{-|
+element wise power 
+-}
+(.^) : Matrix number -> Matrix number -> Maybe (Matrix number)
+(.^) = power

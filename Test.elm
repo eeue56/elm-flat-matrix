@@ -98,6 +98,32 @@ add = suite "Add"
       <|  Matrix.Extra.add (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
   ]
 
+subtract : Test
+subtract = suite "Subtract"
+  [ test "Subtract uniform square matricies"
+      <| assertEqual (Just <| Matrix.repeat 2 2 0) 
+      <|  Matrix.Extra.subtract (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
+    test "Subtract non-uniform square matricies"
+      <| assertEqual (Matrix.fromList [[-1, 0], [0, 1]]) 
+      <|  Matrix.Extra.subtract (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+    test "Can't subtract two differently sized matricies"
+      <| assertEqual Nothing 
+      <|  Matrix.Extra.subtract (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
+  ]
+
+hadamard : Test 
+hadamard = suite "Hadamard"
+  [ test "Hadamard uniform square matricies"
+      <| assertEqual (Just <| Matrix.repeat 2 2 1) 
+      <|  Matrix.Extra.hadamard (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
+    test "Hadamard non-uniform square matricies"
+      <| assertEqual (Matrix.fromList [[2, 4], [4, 6]]) 
+      <|  Matrix.Extra.hadamard (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+    test "Can't hadamard two differently sized matricies"
+      <| assertEqual Nothing 
+      <|  Matrix.Extra.hadamard (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
+  ]
+
 tests : Test
 tests = suite "Tests"
   [ get,
@@ -110,7 +136,9 @@ tests = suite "Tests"
     filter,
     indexedMap,
 
-    add  
+    add,
+    subtract,
+    hadamard
   ]
 
 results : String

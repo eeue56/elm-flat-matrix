@@ -1,4 +1,4 @@
-module Matrix (Matrix, repeat, fromList, get, set, update, map, indexedMap, filter) where
+module Matrix (Matrix, repeat, fromList, get, getRow, set, update, map, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
 Internally it uses a flat array for speed reasons.
@@ -13,7 +13,7 @@ Internally it uses a flat array for speed reasons.
 
 # Dealing with individual elements
 
-@docs get, set, update
+@docs get, set, update, getRow
 
 # Applying functions
 @docs filter, map, indexedMap
@@ -62,6 +62,17 @@ get i j matrix =
     pos = (i * fst matrix.size) + j
   in
     Array.get pos matrix.data
+
+{-| Get a row at a given j
+-}
+getRow : Int -> Matrix a -> Maybe (Array a)
+getRow j matrix =
+  let 
+    start = (j * fst matrix.size)
+    end = start + snd matrix.size
+  in
+    if end > (fst matrix.size * snd matrix.size) then Nothing
+    else Just <| Array.slice start end matrix.data
 
 {-|
   Set a value at a given `i, j` in the matrix and return the new matrix

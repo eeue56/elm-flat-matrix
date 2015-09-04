@@ -176,7 +176,7 @@ indexedMap f matrix =
       in 
         f x y v
   in
-    { matrix | data <- Array.fromList <| List.indexedMap f' matrix.data }
+    { matrix | data <- Array.fromList <| List.indexedMap f' <| Array.toList matrix.data }
 
 {-| 
   Keep only elements that return `True` when passed to the given function f

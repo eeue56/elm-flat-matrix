@@ -39,6 +39,9 @@ repeat  = suite "Repeat"
     test "inequal size" 
       <| assertEqual (2, 3) 
       <| (\z -> z.size) <| Matrix.repeat 2 3 1,
+    test "inequal size matrix fromList 2x3" 
+      <| assertEqual (2, 3) 
+      <| (\z -> z.size) <| (case Matrix.fromList [[1, 1], [1, 1], [1, 1]] of Just v -> v),
     test "inequal size with 1, 100" 
       <| assertEqual (1, 100) 
       <| (\z -> z.size) <| Matrix.repeat 1 100 1
@@ -46,22 +49,34 @@ repeat  = suite "Repeat"
 
 get : Test 
 get = suite "Get"
-  [ test "get first" 
+  [ test "square get first" 
       <| assertEqual (Just 1) 
       <| Matrix.get 0 0 <| Matrix.repeat 1 1 1,
-    test "get from a bigger matrix (500 x 500)" 
+    test "non-square get middle last row 2x3" 
+      <| assertEqual (Just 5) 
+      <| Matrix.get 1 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
+    test "non-square get invalid 2x3" 
+      <| assertEqual (Nothing) 
+      <| Matrix.get 3 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
+    test "non-square get last 3x2" 
+      <| assertEqual (Just 6) 
+      <| Matrix.get 1 2 <| case Matrix.fromList [[1, 2], [3, 4], [5, 6]] of Just v -> v,
+    test "non-square get last 6x2" 
+      <| assertEqual (Just 1) 
+      <| Matrix.get 0 3 <| case Matrix.fromList [[1, 2], [3, 4], [5, 6], [1, 2], [3, 4], [5, 6]] of Just v -> v,
+    test "square get from a bigger matrix (500 x 500)" 
       <| assertEqual (Just 1) 
       <| Matrix.get 24 50 <| Matrix.repeat 500 500 1,
-    test "get from a bigger matrix (500 x 500)" 
+    test "square get from a bigger matrix (500 x 500)" 
       <| assertEqual (Just 1) 
       <| Matrix.get 67 124 <| Matrix.repeat 500 500 1,
-    test "get from a huge matrix (500 x 500)" 
+    test "square get from a huge matrix (500 x 500)" 
       <| assertEqual (Just 567) 
       <| Matrix.get 24 50 <| Matrix.set 24 50 567 <| Matrix.repeat 500 500 1,
-    test "get from a huge matrix (500 x 500)" 
+    test "square get from a huge matrix (500 x 500)" 
       <| assertEqual (Just 567) 
       <| Matrix.get 399 432 <| Matrix.set 399 432 567 <| Matrix.repeat 500 500 1,
-    test "get invalid range" 
+    test "square get invalid range" 
       <| assertEqual (Nothing) 
       <| Matrix.get 1 2 <| Matrix.repeat 1 1 1
   ]
@@ -118,6 +133,15 @@ set = suite "Set"
   [ test "Set first" 
       <| assertEqual (Just 5) 
       <| Matrix.get 0 0 <| Matrix.set 0 0 5 <| Matrix.repeat 2 2 1,
+    test "Set middle 3x3" 
+      <| assertEqual (Just 5) 
+      <| Matrix.get 1 1 <| Matrix.set 1 1 5 <| Matrix.repeat 3 3 1,
+    test "invalid set 3x3" 
+      <| assertEqual (Matrix.repeat 2 3 1)
+      <| Matrix.set 3 1 5 <| Matrix.repeat 2 3 1,
+    test "Set left middle 5x3" 
+      <| assertEqual (Just 5) 
+      <| Matrix.get 3 1 <| Matrix.set 3 1 5 <| Matrix.repeat 5 3 1,
     test "Set outside of range does nothing"
       <| (\x -> assertEqual (1, 1) x.size)
       <| Matrix.set 5 5 1 <| Matrix.repeat 1 1 1

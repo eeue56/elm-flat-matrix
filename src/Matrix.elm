@@ -80,12 +80,13 @@ fromList list =
   Get a value from a given `x y` and return `Just v` if it exists
   Otherwise `Nothing`
 -}
-get : Int -> Int -> Matrix a  -> Maybe a
+get : Int -> Int -> Matrix a -> Maybe a
 get i j matrix = 
   let
-    pos = (i * fst matrix.size) + j
+    pos = (j * (width matrix)) + i
   in
-    Array.get pos matrix.data
+    if i < width matrix && j < height matrix then Array.get pos matrix.data
+    else Nothing
 
 {-| Get a row at a given j
 -}
@@ -130,9 +131,12 @@ concatRow a b =
 set : Int -> Int -> a -> Matrix a -> Matrix a
 set i j v matrix = 
   let
-    pos = (i * fst matrix.size) + j
+    pos = (j * fst matrix.size) + i
   in
-    { matrix | data <- Array.set pos v matrix.data }
+    if i < width matrix && j < height matrix then 
+      { matrix | data <- Array.set pos v matrix.data }
+    else 
+      matrix
 
 {-|
   Update an element at `x, y` with the given update function

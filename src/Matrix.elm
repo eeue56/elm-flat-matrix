@@ -85,7 +85,7 @@ get i j matrix =
   let
     pos = (j * (width matrix)) + i
   in
-    if i < width matrix && j < height matrix then Array.get pos matrix.data
+    if (i < width matrix && i > -1) && (j < height matrix && j > -1) then Array.get pos matrix.data
     else Nothing
 
 {-| Get a row at a given j

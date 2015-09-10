@@ -76,9 +76,15 @@ get = suite "Get"
     test "square get from a huge matrix (500 x 500)" 
       <| assertEqual (Just 567) 
       <| Matrix.get 399 432 <| Matrix.set 399 432 567 <| Matrix.repeat 500 500 1,
-    test "square get invalid range" 
+    test "square get invalid range y too big" 
       <| assertEqual (Nothing) 
-      <| Matrix.get 1 2 <| Matrix.repeat 1 1 1
+      <| Matrix.get 1 2 <| Matrix.repeat 1 1 1,
+    test "square get invalid range x too small" 
+      <| assertEqual (Nothing) 
+      <| Matrix.get -1 2 <| Matrix.repeat 1 1 1,
+    test "square get invalid range y too small" 
+      <| assertEqual (Nothing) 
+      <| Matrix.get 1 -2 <| Matrix.repeat 1 1 1
   ]
 
 getRow : Test 
@@ -294,6 +300,19 @@ power = suite "power"
       <|  Matrix.Extra.power (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
   ]
 
+neighbours : Test
+neighbours = suite "neighbours"
+  [ test "neighbours of square matrix"
+      <| assertEqual  8
+      <|  List.sum <| Matrix.Extra.neighbours 1 1 <| Matrix.repeat 3 3 1,
+    test "neighbours of square matrix in the bottom middle"
+      <| assertEqual  5
+      <|  List.sum <| Matrix.Extra.neighbours 0 1 <| Matrix.repeat 3 3 1,
+    test "neighbours of square matrix in the bottom middle"
+      <| assertEqual  [1, 1, 1]
+      <|  Matrix.Extra.neighbours 0 0 <| Matrix.repeat 3 3 1
+  ]
+
 tests : Test
 tests = suite "Tests"
   [ get,
@@ -318,7 +337,9 @@ tests = suite "Tests"
     add,
     subtract,
     hadamard,
-    power
+    power,
+
+    neighbours
   ]
 
 results : String

@@ -47,6 +47,11 @@ type alias Matrix a = {
   size: (Int, Int),
   data : Array (a) }
 
+
+{-| Create an empty matrix -}
+empty : Matrix a
+empty = { size = (0, 0), data = Array.empty}
+
 {-| Width of a given matrix -}
 width : Matrix a -> Int
 width matrix = fst matrix.size 

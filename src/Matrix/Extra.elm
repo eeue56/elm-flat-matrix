@@ -2,6 +2,7 @@ module Matrix.Extra (
     add, subtract, 
     hadamard, (.*),
     power, (.^),
+    prettyPrint,
     neighbours, diagonals, indexedNeighbours, neighboursFour) where
 {-| Extra methods for Matricies
 
@@ -14,9 +15,28 @@ module Matrix.Extra (
 # Interacting with other cells
 @docs neighbours, indexedNeighbours, diagonals, neighboursFour
 
+@docs prettyPrint
+
 -}
-import Matrix exposing (Matrix, map2, get)
+import Matrix exposing (Matrix, map2, get, getRow, height, width)
 import Array exposing (fromList, toList)
+import Html exposing (Html, table, tr, td, fromElement)
+import Html.Attributes exposing (style)
+import Graphics.Element exposing (show)
+
+{-| -}
+prettyPrint : Matrix a -> Html
+prettyPrint matrix =
+  let
+    printXIndex = tr [] (td [] [] :: List.map printCell [0..(width matrix)-1] ) 
+    printCell cell = td [style [ ("border", "1px solid black" ) ] ] [fromElement <| show cell]
+    printRow i row = tr [] <| (printCell i) :: (Array.toList <| Array.map printCell row)
+  in
+    table [] 
+      <| printXIndex
+      :: (List.indexedMap printRow
+      <| List.map (\i-> case getRow i matrix of Just v -> v) [0..(height matrix)-1])
+
 
 {-|
 Get the neighbours of a point (x, y) in the matrix

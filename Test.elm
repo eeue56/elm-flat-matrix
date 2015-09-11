@@ -345,5 +345,6 @@ tests = suite "Tests"
 results : String
 results = StringRunner.runDisplay tests
 
-main : Element
-main = ElementRunner.runDisplay tests
+
+--main = ElementRunner.runDisplay tests
+main = Matrix.Extra.prettyPrint <| Matrix.set 2 2 "dsf" <| Matrix.repeat 4 4 "yoSup"

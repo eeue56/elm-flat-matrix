@@ -1,4 +1,5 @@
 module Matrix (Matrix, 
+  height, width,
   repeat, fromList, 
   get, getRow, getColumn, 
   set, update, concatRow, concatColumn,
@@ -11,6 +12,10 @@ Internally it uses a flat array for speed reasons.
 # The matrix type
 
 @docs Matrix
+
+# Get matrix dimensions
+
+@docs height, width
 
 # Creating a matrix
 

@@ -25,7 +25,7 @@ import Html.Attributes exposing (style)
 import Graphics.Element exposing (show)
 
 {-|
-Makes a fucking beautiful matrix on your hipster hiRes screen
+Print out a matrix into a table
 -}
 prettyPrint : Matrix a -> Html
 prettyPrint matrix =

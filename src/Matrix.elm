@@ -117,13 +117,13 @@ getColumn i matrix =
       then Nothing
       else Just <| Array.fromList <| List.map (\index -> case Array.get index matrix.data of Just v -> v) indices
 
-{-| Append a matrix to another matrix and return the result. Return nothing if the widths don't match -}
+{-| Append a matrix to another matrix horizontally and return the result. Return Nothing if the heights don't match -}
 concatColumn : Matrix a -> Matrix a -> Maybe (Matrix a) 
 concatColumn a b =
   if fst a.size /= fst b.size then Nothing
   else Just <| { a | size <- (fst a.size + fst b.size, snd a.size), data <- Array.append a.data b.data}
 
-{-| Append a matrix to another matrix and return the result. Return nothing if the widths don't match -}
+{-| Append a matrix to another matrix vertically and return the result. Return Nothing if the widths don't match -}
 concatRow : Matrix a -> Matrix a -> Maybe (Matrix a) 
 concatRow a b =
   if fst a.size /= fst b.size then Nothing

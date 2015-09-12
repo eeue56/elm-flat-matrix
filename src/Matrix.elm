@@ -3,7 +3,7 @@ module Matrix (Matrix,
   repeat, fromList, 
   get, getRow, getColumn, 
   set, update, concatRow, concatColumn,
-  toIndexedArray,
+  toIndexedArray, empty,
   map, map2, indexedMap, filter) where
 {-| 
 A matrix implemention for Elm.
@@ -13,13 +13,13 @@ Internally it uses a flat array for speed reasons.
 
 @docs Matrix
 
+# Creating a matrix
+
+@docs repeat, fromList, empty
+
 # Get matrix dimensions
 
 @docs height, width
-
-# Creating a matrix
-
-@docs repeat, fromList
 
 # Dealing with individual elements
 
@@ -46,6 +46,11 @@ import List
 type alias Matrix a = {
   size: (Int, Int),
   data : Array (a) }
+
+
+{-| Create an empty matrix -}
+empty : Matrix a
+empty = { size = (0, 0), data = Array.empty}
 
 {-| Width of a given matrix -}
 width : Matrix a -> Int

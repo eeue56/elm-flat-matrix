@@ -127,12 +127,11 @@ concatHorizontal : Matrix a -> Matrix a -> Maybe (Matrix a)
 concatHorizontal a b =
   let
     finalWidth = fst a.size + fst b.size
-    height = snd a.size
     insert i xs array = Array.append
                           (Array.append (Array.slice 0 i array) xs)
-                          (Array.slice i (Array.length array + 1) array)
+                          (Array.slice i (Array.length array) array)
   in
-    if height /= snd b.size then Nothing
+    if snd a.size /= snd b.size then Nothing
     else Just <| { a | size <- (finalWidth, snd a.size)
                      , data <- List.foldl 
                                 (\(i,xs) acc -> insert (i*finalWidth) xs acc)

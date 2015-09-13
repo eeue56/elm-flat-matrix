@@ -350,6 +350,6 @@ main = ElementRunner.runDisplay tests
 --main = Matrix.Extra.prettyPrint 
 --        ( case Matrix.concatHorizontal 
 --                (Matrix.repeat 3 2 1)
---                (case Matrix.fromList [[1],[2]] of Just v -> v)
+--                (case Matrix.fromList [List.repeat 21 3, List.repeat 21 5] of Just v -> v)
 --          of Just v -> v
 --        )

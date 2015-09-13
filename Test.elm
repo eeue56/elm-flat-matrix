@@ -234,18 +234,18 @@ filter = suite "Filter"
       <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
   ]
 
-concatRow : Test
-concatRow = suite "Append row"
+concatVertical : Test
+concatVertical = suite "Append row"
   [ test "add two rows to the end" 
       <| assertEqual (Just <| Matrix.repeat 1 4 2) 
-      <|  Matrix.concatRow (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
+      <|  Matrix.concatVertical (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
   ]
 
-concatColumn : Test
-concatColumn = suite "Append column"
+concatHorizontal : Test
+concatHorizontal = suite "Append column"
   [ test "add a column to the end" 
       <| assertEqual (Just <| Matrix.repeat 2 2 2) 
-      <|  Matrix.concatColumn (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
+      <|  Matrix.concatHorizontal (Matrix.repeat 1 2 2) (Matrix.repeat 1 2 2)
   ]
 
 add : Test
@@ -320,8 +320,8 @@ tests = suite "Tests"
     getColumn,
 
 
-    concatRow,
-    concatColumn,
+    concatVertical,
+    concatHorizontal,
     set,
     update,
 
@@ -347,4 +347,9 @@ results = StringRunner.runDisplay tests
 
 
 main = ElementRunner.runDisplay tests
---main = Matrix.Extra.prettyPrint <| Matrix.set 2 2 "dsf" <| Matrix.repeat 4 4 "yoSup"
+--main = Matrix.Extra.prettyPrint 
+--        ( case Matrix.concatHorizontal 
+--                (Matrix.repeat 3 2 1)
+--                (case Matrix.fromList [[1],[2]] of Just v -> v)
+--          of Just v -> v
+--        )

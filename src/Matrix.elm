@@ -2,7 +2,7 @@ module Matrix (Matrix,
   height, width,
   repeat, fromList, 
   get, getRow, getColumn, 
-  set, update, concatRow, concatColumn,
+  set, update, concatVertical, concatHorizontal,
   toIndexedArray, empty,
   map, map2, indexedMap, filter) where
 {-| 
@@ -27,7 +27,7 @@ Internally it uses a flat array for speed reasons.
 
 # Appending to an Matrix
 
-@docs concatRow, concatColumn
+@docs concatVertical, concatHorizontal
 
 # Get rows/columns
 
@@ -123,14 +123,26 @@ getColumn i matrix =
       else Just <| Array.fromList <| List.map (\index -> case Array.get index matrix.data of Just v -> v) indices
 
 {-| Append a matrix to another matrix horizontally and return the result. Return Nothing if the heights don't match -}
-concatColumn : Matrix a -> Matrix a -> Maybe (Matrix a) 
-concatColumn a b =
-  if fst a.size /= fst b.size then Nothing
-  else Just <| { a | size <- (fst a.size + fst b.size, snd a.size), data <- Array.append a.data b.data}
+concatHorizontal : Matrix a -> Matrix a -> Maybe (Matrix a) 
+concatHorizontal a b =
+  let
+    finalWidth = fst a.size + fst b.size
+    height = snd a.size
+    insert i xs array = Array.append
+                          (Array.append (Array.slice 0 i array) xs)
+                          (Array.slice i (Array.length array + 1) array)
+  in
+    if height /= snd b.size then Nothing
+    else Just <| { a | size <- (finalWidth, snd a.size)
+                     , data <- List.foldl 
+                                (\(i,xs) acc -> insert (i*finalWidth) xs acc)
+                                b.data
+                                <| List.map (\i -> case getRow i a of Just v -> (i,v)) [0..(snd a.size)-1]
+                 }
 
 {-| Append a matrix to another matrix vertically and return the result. Return Nothing if the widths don't match -}
-concatRow : Matrix a -> Matrix a -> Maybe (Matrix a) 
-concatRow a b =
+concatVertical : Matrix a -> Matrix a -> Maybe (Matrix a) 
+concatVertical a b =
   if fst a.size /= fst b.size then Nothing
   else Just <| { a | size <- (fst a.size, snd a.size + snd b.size), data <- Array.append a.data b.data}
 

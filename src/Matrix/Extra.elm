@@ -30,9 +30,16 @@ Print out a matrix into a table
 prettyPrint : Matrix a -> Html
 prettyPrint matrix =
   let
-    printXIndex = tr [] (td [] [] :: List.map printCell [0..(width matrix)-1] ) 
-    printCell cell = td [style [ ("border", "1px solid black" ) ] ] [fromElement <| show cell]
-    printRow i row = tr [] <| (printCell i) :: (Array.toList <| Array.map printCell row)
+    printXIndex = tr [] (td [style [("background-color", "black") ]] [] :: List.map printXCell [0..(width matrix)-1] ) 
+    printXCell cell = 
+        td [style [ ("border", "1px solid black" ), ("background-color", "#A8A8F5") ] ]
+          <| [fromElement <| show cell]
+    printCell cell = 
+      td [style [ ("border", "1px solid black" ) ] ] 
+        <| [fromElement <| show cell]
+    printRow i row =
+        tr [] 
+          <| (printXCell i) :: (Array.toList <| Array.map printCell row)
   in
     table [] 
       <| printXIndex

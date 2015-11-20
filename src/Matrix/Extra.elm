@@ -67,7 +67,6 @@ neighbours x y matrix =
       Matrix.get (x + di) (y + dj) matrix 
   in
     unpackMaybeList identity 
-    --List.map (\x -> case x of Just v -> v)
     <| List.filter (\x -> case x of
         Just y -> True
         Nothing -> False)
@@ -135,7 +134,6 @@ diagonals x y matrix =
     grab di dj =
       Matrix.get (x + di) (y + dj) matrix 
   in
-    --List.map (\x -> case x of Just v -> v)
     unpackMaybeList identity
     <| List.filter (\x -> case x of
         Just y -> True
@@ -159,7 +157,6 @@ neighboursFour x y matrix =
     grab di dj =
       Matrix.get (x + di) (y + dj) matrix 
   in
-    --List.map (\x -> case x of Just v -> v)
     unpackMaybeList identity
     <| List.filter (\x -> case x of
         Just y -> True

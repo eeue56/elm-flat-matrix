@@ -12,6 +12,7 @@ import Array
 import Matrix
 import Matrix.Extra
 
+unpackMaybeSize : List (List a) -> (Int, Int)
 unpackMaybeSize ls =
   case Matrix.fromList ls of
     Just m -> m.size
@@ -22,17 +23,12 @@ fromList = suite "From list"
   [ test "equal size" 
       <| assertEqual (2, 2) 
       <| unpackMaybeSize [[1, 1], [1, 1]],
-      --<| case Matrix.fromList [[1, 1], [1, 1]] of
-      --    Just v -> v.size
-      --    Nothing -> (0,0),
     test "inequal size" 
       <| assertEqual (2, 3) 
       <| unpackMaybeSize [[1, 1], [1, 1], [3, 3]],
-      --<| case Matrix.fromList [[1, 1], [1, 1], [3, 3]] of Just v -> v.size,
     test "inequal size" 
       <| assertEqual (3, 2) 
       <| unpackMaybeSize [[1, 1, 1], [1, 1, 1]],
-      --<| case Matrix.fromList [[1, 1, 1], [1, 1, 1]] of Just v -> v.size,
     test "Non-consistent size" 
       <| assertEqual False 
       <| case Matrix.fromList [[1, 1, 1], [1, 1, 1, 5]] of 
@@ -51,7 +47,6 @@ repeat  = suite "Repeat"
     test "inequal size matrix fromList 2x3" 
       <| assertEqual (2, 3) 
       <| unpackMaybeSize [[1, 1], [1, 1], [1, 1]],
-      --(case Matrix.fromList [[1, 1], [1, 1], [1, 1]] of Just v -> v),
     test "inequal size with 1, 100" 
       <| assertEqual (1, 100) 
       <| (\z -> z.size) <| Matrix.repeat 1 100 1
@@ -66,7 +61,6 @@ get = suite "Get"
       <| assertEqual (Just 5) 
       <| Matrix.get 1 1
       <| Maybe.withDefault Matrix.empty <| Matrix.fromList [[1, 2, 3], [4, 5, 6]],
-      --<| Matrix.get 1 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
     test "non-square get invalid 2x3" 
       <| assertEqual (Nothing) 
       <| Matrix.get 3 1 <| Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2, 3], [4, 5, 6]]),

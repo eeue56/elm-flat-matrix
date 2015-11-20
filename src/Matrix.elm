@@ -128,10 +128,6 @@ getColumn i matrix =
           Just v -> ls ++ [v]
           Nothing -> ls
       ) [] indices
-      --else Just <| Array.fromList <| List.map (\index ->
-      --  case Array.get index matrix.data of
-      --    Just v -> v
-      --    Nothing -> ) indices
 
 {-| Append a matrix to another matrix horizontally and return the result. Return Nothing if the heights don't match -}
 concatHorizontal : Matrix a -> Matrix a -> Maybe (Matrix a) 

@@ -16,7 +16,7 @@ unpackMaybeSize : List (List a) -> (Int, Int)
 unpackMaybeSize ls =
   case Matrix.fromList ls of
     Just m -> m.size
-    Nothing -> (0,0)
+    Nothing -> (-1,-1) -- Impossible size test case
 
 fromList : Test
 fromList = suite "From list"

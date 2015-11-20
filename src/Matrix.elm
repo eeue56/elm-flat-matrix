@@ -79,7 +79,10 @@ fromList list =
     -- the number of elements in the top level list is taken as height
     height = List.length list
     -- the number of elements in the first element is taken as the width
-    width = List.length <| case List.head list of Just x -> x
+    width = List.length <|
+      case List.head list of
+        Just x -> x
+        Nothing -> []
     -- ensure that all "rows" are the same size
     allSame = List.isEmpty <| List.filter (\x -> List.length x /= width) list
   in 
@@ -120,7 +123,15 @@ getColumn i matrix =
   in 
     if i >= width 
       then Nothing
-      else Just <| Array.fromList <| List.map (\index -> case Array.get index matrix.data of Just v -> v) indices
+      else Just <| Array.fromList <| List.foldl (\index ls ->
+        case Array.get index matrix.data of
+          Just v -> ls ++ [v]
+          Nothing -> ls
+      ) [] indices
+      --else Just <| Array.fromList <| List.map (\index ->
+      --  case Array.get index matrix.data of
+      --    Just v -> v
+      --    Nothing -> ) indices
 
 {-| Append a matrix to another matrix horizontally and return the result. Return Nothing if the heights don't match -}
 concatHorizontal : Matrix a -> Matrix a -> Maybe (Matrix a) 
@@ -132,18 +143,21 @@ concatHorizontal a b =
                           (Array.slice i (Array.length array) array)
   in
     if snd a.size /= snd b.size then Nothing
-    else Just <| { a | size <- (finalWidth, snd a.size)
-                     , data <- List.foldl 
+    else Just <| { a | size = (finalWidth, snd a.size)
+                     , data = List.foldl 
                                 (\(i,xs) acc -> insert (i*finalWidth) xs acc)
                                 b.data
-                                <| List.map (\i -> case getRow i a of Just v -> (i,v)) [0..(snd a.size)-1]
+                                <| List.foldl (\i ls ->
+                                  case getRow i a of
+                                    Just v -> ls ++ [(i,v)]
+                                    Nothing -> ls) [] [0..(snd a.size)-1]
                  }
 
 {-| Append a matrix to another matrix vertically and return the result. Return Nothing if the widths don't match -}
 concatVertical : Matrix a -> Matrix a -> Maybe (Matrix a) 
 concatVertical a b =
   if fst a.size /= fst b.size then Nothing
-  else Just <| { a | size <- (fst a.size, snd a.size + snd b.size), data <- Array.append a.data b.data}
+  else Just <| { a | size = (fst a.size, snd a.size + snd b.size), data = Array.append a.data b.data}
 
 {-|
   Set a value at a given `i, j` in the matrix and return the new matrix
@@ -155,7 +169,7 @@ set i j v matrix =
     pos = (j * fst matrix.size) + i
   in
     if i < width matrix && j < height matrix then 
-      { matrix | data <- Array.set pos v matrix.data }
+      { matrix | data = Array.set pos v matrix.data }
     else 
       matrix
 
@@ -174,14 +188,14 @@ update x y f matrix =
 -}
 map : (a -> b) -> Matrix a -> Matrix b
 map f matrix = 
-  { matrix | data <- Array.map f matrix.data }
+  { matrix | data = Array.map f matrix.data }
 
 
 {-| Apply a function to two matricies at once
 -}
 map2 : (a -> b -> c) -> Matrix a -> Matrix b -> Maybe (Matrix c)
 map2 f a b = if a.size == b.size 
-                then Just { a | data <- Array.fromList <| List.map2 f (Array.toList a.data) (Array.toList b.data) }
+                then Just { a | data = Array.fromList <| List.map2 f (Array.toList a.data) (Array.toList b.data) }
                 else Nothing
 
 {-| 
@@ -197,7 +211,7 @@ indexedMap f matrix =
       in 
         f x y v
   in
-    { matrix | data <- Array.fromList <| List.indexedMap f' <| Array.toList matrix.data }
+    { matrix | data = Array.fromList <| List.indexedMap f' <| Array.toList matrix.data }
 
 {-| 
   Keep only elements that return `True` when passed to the given function f

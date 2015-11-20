@@ -12,18 +12,27 @@ import Array
 import Matrix
 import Matrix.Extra
 
+unpackMaybeSize ls =
+  case Matrix.fromList ls of
+    Just m -> m.size
+    Nothing -> (0,0)
 
 fromList : Test
 fromList = suite "From list"
   [ test "equal size" 
       <| assertEqual (2, 2) 
-      <| case Matrix.fromList [[1, 1], [1, 1]] of Just v -> v.size,
+      <| unpackMaybeSize [[1, 1], [1, 1]],
+      --<| case Matrix.fromList [[1, 1], [1, 1]] of
+      --    Just v -> v.size
+      --    Nothing -> (0,0),
     test "inequal size" 
       <| assertEqual (2, 3) 
-      <| case Matrix.fromList [[1, 1], [1, 1], [3, 3]] of Just v -> v.size,
+      <| unpackMaybeSize [[1, 1], [1, 1], [3, 3]],
+      --<| case Matrix.fromList [[1, 1], [1, 1], [3, 3]] of Just v -> v.size,
     test "inequal size" 
       <| assertEqual (3, 2) 
-      <| case Matrix.fromList [[1, 1, 1], [1, 1, 1]] of Just v -> v.size,
+      <| unpackMaybeSize [[1, 1, 1], [1, 1, 1]],
+      --<| case Matrix.fromList [[1, 1, 1], [1, 1, 1]] of Just v -> v.size,
     test "Non-consistent size" 
       <| assertEqual False 
       <| case Matrix.fromList [[1, 1, 1], [1, 1, 1, 5]] of 
@@ -41,7 +50,8 @@ repeat  = suite "Repeat"
       <| (\z -> z.size) <| Matrix.repeat 2 3 1,
     test "inequal size matrix fromList 2x3" 
       <| assertEqual (2, 3) 
-      <| (\z -> z.size) <| (case Matrix.fromList [[1, 1], [1, 1], [1, 1]] of Just v -> v),
+      <| unpackMaybeSize [[1, 1], [1, 1], [1, 1]],
+      --(case Matrix.fromList [[1, 1], [1, 1], [1, 1]] of Just v -> v),
     test "inequal size with 1, 100" 
       <| assertEqual (1, 100) 
       <| (\z -> z.size) <| Matrix.repeat 1 100 1
@@ -54,16 +64,18 @@ get = suite "Get"
       <| Matrix.get 0 0 <| Matrix.repeat 1 1 1,
     test "non-square get middle last row 2x3" 
       <| assertEqual (Just 5) 
-      <| Matrix.get 1 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
+      <| Matrix.get 1 1
+      <| Maybe.withDefault Matrix.empty <| Matrix.fromList [[1, 2, 3], [4, 5, 6]],
+      --<| Matrix.get 1 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
     test "non-square get invalid 2x3" 
       <| assertEqual (Nothing) 
-      <| Matrix.get 3 1 <| case Matrix.fromList [[1, 2, 3], [4, 5, 6]] of Just v -> v,
+      <| Matrix.get 3 1 <| Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2, 3], [4, 5, 6]]),
     test "non-square get last 3x2" 
       <| assertEqual (Just 6) 
-      <| Matrix.get 1 2 <| case Matrix.fromList [[1, 2], [3, 4], [5, 6]] of Just v -> v,
+      <| Matrix.get 1 2 <| Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [3, 4], [5, 6]]),
     test "non-square get last 6x2" 
       <| assertEqual (Just 1) 
-      <| Matrix.get 0 3 <| case Matrix.fromList [[1, 2], [3, 4], [5, 6], [1, 2], [3, 4], [5, 6]] of Just v -> v,
+      <| Matrix.get 0 3 <| Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [3, 4], [5, 6], [1, 2], [3, 4], [5, 6]]),
     test "square get from a bigger matrix (500 x 500)" 
       <| assertEqual (Just 1) 
       <| Matrix.get 24 50 <| Matrix.repeat 500 500 1,
@@ -91,16 +103,16 @@ getRow : Test
 getRow = suite "GetRow"
   [ test "square get first row" 
       <| assertEqual (Just <| Array.fromList [2, 3]) 
-      <| Matrix.getRow 0  <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v,
+      <| Matrix.getRow 0  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 1]]),
     test "square get last row" 
       <| assertEqual (Just <| Array.fromList [1, 1]) 
-      <| Matrix.getRow 1  <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v,
+      <| Matrix.getRow 1  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 1]]),
     test "non-square get last row 2x3" 
       <| assertEqual (Just <| Array.fromList [4, 5]) 
-      <| Matrix.getRow 2  <| case Matrix.fromList [[2, 3], [1, 1], [4, 5]] of Just v -> v,
+      <| Matrix.getRow 2  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 1], [4, 5]]),
     test "non-square get last row 3x2" 
       <| assertEqual (Just <| Array.fromList [1, 1, 5]) 
-      <| Matrix.getRow 1  <| case Matrix.fromList [[2, 3, 4], [1, 1, 5]] of Just v -> v,
+      <| Matrix.getRow 1  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3, 4], [1, 1, 5]]),
     test "square get invalid range" 
       <| assertEqual (Nothing) 
       <| Matrix.getRow 5 <| Matrix.repeat 1 1 1,
@@ -113,22 +125,22 @@ getColumn : Test
 getColumn = suite "GetColumn"
   [ test "square get first column 2x2" 
       <| assertEqual (Just <| Array.fromList [2, 1]) 
-      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3], [1, 6]] of Just v -> v,
+      <| Matrix.getColumn 0  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 6]]),
     test "square get last column 2x2" 
       <| assertEqual (Just <| Array.fromList [3, 6]) 
-      <| Matrix.getColumn 1  <| case Matrix.fromList [[2, 3], [1, 6]] of Just v -> v,
+      <| Matrix.getColumn 1  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 6]]),
     test "non-square get first column 3x2" 
       <| assertEqual (Just <| Array.fromList [2, 1, 3]) 
-      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3], [1, 6], [3, 9]] of Just v -> v,
+      <| Matrix.getColumn 0  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 6], [3, 9]]),
     test "non-square get last column 3x2" 
       <| assertEqual (Just <| Array.fromList [3, 6, 9]) 
-      <| Matrix.getColumn 1  <| case Matrix.fromList [[2, 3], [1, 6], [3, 9]] of Just v -> v,
+      <| Matrix.getColumn 1  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3], [1, 6], [3, 9]]),
     test "non-square get first column 2x3" 
       <| assertEqual (Just <| Array.fromList [2, 1]) 
-      <| Matrix.getColumn 0  <| case Matrix.fromList [[2, 3, 3], [1, 6, 9]] of Just v -> v,
+      <| Matrix.getColumn 0  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3, 3], [1, 6, 9]]),
     test "non-square get last column 2x3" 
       <| assertEqual (Just <| Array.fromList [3, 9]) 
-      <| Matrix.getColumn 2  <| case Matrix.fromList [[2, 3, 3], [1, 6, 9]] of Just v -> v,
+      <| Matrix.getColumn 2  <| Maybe.withDefault Matrix.empty (Matrix.fromList [[2, 3, 3], [1, 6, 9]]),
     test "get invalid range" 
       <| assertEqual (Nothing) 
       <| Matrix.getColumn 5 <| Matrix.repeat 1 1 1
@@ -183,16 +195,16 @@ indexedMap = suite "IndexedMap"
       <| assertEqual (Matrix.repeat 1 1 0) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 1 1 1,
     test "square (x,y) -> (x, y)" 
-      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)], [(0,2), (1,2), (2,2)]] of Just v -> v) 
+      <| assertEqual (Maybe.withDefault Matrix.empty (Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0,1), (1,1), (2,1)], [(0,2), (1,2), (2,2)]])) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 3 3 1,
     test "non-square (x,y) -> (x, y)" 
-      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0)], [(0, 1) ,(1,1)], [(0,2), (1,2)]] of Just v -> v) 
+      <| assertEqual (Maybe.withDefault Matrix.empty (Matrix.fromList [[(0, 0), (1, 0)], [(0, 1) ,(1,1)], [(0,2), (1,2)]])) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 2 3 1,
     test "non-square (x,y) -> x + y" 
-      <| assertEqual (case Matrix.fromList [[0, 1], [1, 2], [2, 3]] of Just v -> v) 
+      <| assertEqual (Maybe.withDefault Matrix.empty (Matrix.fromList [[0, 1], [1, 2], [2, 3]])) 
       <|  Matrix.indexedMap (\x y _ -> x + y) <| Matrix.repeat 2 3 1,
     test "non-square (x,y) -> (x, y)" 
-      <| assertEqual (case Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)]] of Just v -> v) 
+      <| assertEqual (Maybe.withDefault Matrix.empty (Matrix.fromList [[(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)]])) 
       <|  Matrix.indexedMap (\x y _ -> (x, y)) <| Matrix.repeat 3 2 1
   ]
 
@@ -231,7 +243,7 @@ filter : Test
 filter = suite "Filter"
   [ test "Keep ones" 
       <| assertEqual (Array.repeat 2 1) 
-      <|  Matrix.filter (\x -> x == 1) <| case Matrix.fromList [[2, 3], [1, 1]] of Just v -> v
+      <|  Matrix.filter (\x -> x == 1) <| Maybe.withDefault Matrix.empty <| Matrix.fromList [[2, 3], [1, 1]]
   ]
 
 concatVertical : Test
@@ -255,7 +267,7 @@ add = suite "Add"
       <|  Matrix.Extra.add (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 2),
     test "Add non-uniform square matricies"
       <| assertEqual (Matrix.fromList [[3, 4], [4, 5]]) 
-      <|  Matrix.Extra.add (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+      <|  Matrix.Extra.add (Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [2, 3]])) (Matrix.repeat 2 2 2),
     test "Can't add two differently sized matricies"
       <| assertEqual Nothing 
       <|  Matrix.Extra.add (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
@@ -268,7 +280,7 @@ subtract = suite "Subtract"
       <|  Matrix.Extra.subtract (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
     test "Subtract non-uniform square matricies"
       <| assertEqual (Matrix.fromList [[-1, 0], [0, 1]]) 
-      <|  Matrix.Extra.subtract (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+      <|  Matrix.Extra.subtract (Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [2, 3]])) (Matrix.repeat 2 2 2),
     test "Can't subtract two differently sized matricies"
       <| assertEqual Nothing 
       <|  Matrix.Extra.subtract (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
@@ -281,7 +293,7 @@ hadamard = suite "Hadamard"
       <|  Matrix.Extra.hadamard (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
     test "Hadamard non-uniform square matricies"
       <| assertEqual (Matrix.fromList [[2, 4], [4, 6]]) 
-      <|  Matrix.Extra.hadamard (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+      <|  Matrix.Extra.hadamard (Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [2, 3]])) (Matrix.repeat 2 2 2),
     test "Can't hadamard two differently sized matricies"
       <| assertEqual Nothing 
       <|  Matrix.Extra.hadamard (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)
@@ -294,7 +306,7 @@ power = suite "power"
       <|  Matrix.Extra.power (Matrix.repeat 2 2 1) (Matrix.repeat 2 2 1),
     test "power non-uniform square matricies"
       <| assertEqual (Matrix.fromList [[1, 4], [4, 9]]) 
-      <|  Matrix.Extra.power (case Matrix.fromList [[1, 2], [2, 3]] of Just v -> v) (Matrix.repeat 2 2 2),
+      <|  Matrix.Extra.power (Maybe.withDefault Matrix.empty (Matrix.fromList [[1, 2], [2, 3]])) (Matrix.repeat 2 2 2),
     test "Can't power two differently sized matricies"
       <| assertEqual Nothing 
       <|  Matrix.Extra.power (Matrix.repeat 2 2 1) (Matrix.repeat 2 3 2)

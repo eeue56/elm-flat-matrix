@@ -24,6 +24,15 @@ import Html exposing (Html, table, tr, td, fromElement)
 import Html.Attributes exposing (style)
 import Graphics.Element exposing (show)
 
+-- Helper function for unpacking lists
+unpackMaybeList : (a -> Maybe b) -> List a -> List b
+unpackMaybeList fn ls =
+  List.foldl (\item ls ->
+    case fn item of
+      Just it -> ls ++ [it]
+      Nothing -> ls
+    ) [] ls
+
 {-|
 Print out a matrix into a table
 -}
@@ -44,7 +53,7 @@ prettyPrint matrix =
     table [] 
       <| printXIndex
       :: (List.indexedMap printRow
-      <| List.map (\i-> case getRow i matrix of Just v -> v) [0..(height matrix)-1])
+      <| unpackMaybeList (\i -> getRow i matrix) [0..(height matrix)-1])
 
 
 {-|
@@ -57,7 +66,7 @@ neighbours x y matrix =
     grab di dj =
       Matrix.get (x + di) (y + dj) matrix 
   in
-    List.map (\x -> case x of Just v -> v)
+    unpackMaybeList identity 
     <| List.filter (\x -> case x of
         Just y -> True
         Nothing -> False)
@@ -91,7 +100,11 @@ indexedNeighbours x y matrix =
       in 
         ((nx, ny), Matrix.get nx ny matrix)
   in
-    List.map (\(pos, x) -> case x of Just v -> (pos, v))
+    unpackMaybeList (\(pos, x) -> 
+      case x of
+        Just v -> Just (pos, v)
+        Nothing -> Nothing
+    )
     <| List.filter (\(_, x) -> case x of
         Just y -> True
         Nothing -> False)
@@ -121,7 +134,7 @@ diagonals x y matrix =
     grab di dj =
       Matrix.get (x + di) (y + dj) matrix 
   in
-    List.map (\x -> case x of Just v -> v)
+    unpackMaybeList identity
     <| List.filter (\x -> case x of
         Just y -> True
         Nothing -> False)
@@ -144,7 +157,7 @@ neighboursFour x y matrix =
     grab di dj =
       Matrix.get (x + di) (y + dj) matrix 
   in
-    List.map (\x -> case x of Just v -> v)
+    unpackMaybeList identity
     <| List.filter (\x -> case x of
         Just y -> True
         Nothing -> False)

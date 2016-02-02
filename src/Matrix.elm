@@ -164,7 +164,7 @@ set i j v matrix =
   let
     pos = (j * fst matrix.size) + i
   in
-    if i < width matrix && j < height matrix then 
+    if (i < width matrix && i > -1) && (j < height matrix && j > -1) then 
       { matrix | data = Array.set pos v matrix.data }
     else 
       matrix

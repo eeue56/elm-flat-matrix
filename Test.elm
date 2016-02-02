@@ -154,9 +154,12 @@ set = suite "Set"
     test "Set left middle 5x3" 
       <| assertEqual (Just 5) 
       <| Matrix.get 3 1 <| Matrix.set 3 1 5 <| Matrix.repeat 5 3 1,
-    test "Set outside of range does nothing"
+    test "Set outside of range does not change size"
       <| (\x -> assertEqual (1, 1) x.size)
-      <| Matrix.set 5 5 1 <| Matrix.repeat 1 1 1
+      <| Matrix.set 5 5 1 <| Matrix.repeat 1 1 1,
+    test "Set with negative index does nothing"
+      <| assertEqual (Matrix.repeat 3 3 1)
+      <| Matrix.set (-1) 2 0 <| Matrix.repeat 3 3 1
   ]
 
 update : Test

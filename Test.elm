@@ -1,15 +1,16 @@
-module Test where
+module Test exposing (..)
 
-import Graphics.Element exposing (..)
+import Element exposing (..)
 import ElmTest exposing
   ( Test
   , suite, test, assertEqual
-  , elementRunner, stringRunner
+  , consoleRunner, stringRunner
   )
 
 import Array
 import Matrix
 import Matrix.Extra
+import Html exposing (Html)
 
 unpackMaybeSize : List (List a) -> (Int, Int)
 unpackMaybeSize ls =
@@ -350,13 +351,19 @@ tests = suite "Tests"
     neighbours
   ]
 
+-- | May 12, 2016 @ 3:15PM PDT, ran results in elm-repl:
+-- > results
+-- "  20 suites run, containing 69 tests\n  All tests passed\n  \n\n" : String
 results : String
 results = stringRunner tests
 
-main : Element
-main = elementRunner tests
---main = Matrix.Extra.prettyPrint
---        ( case Matrix.concatHorizontal
---                (Matrix.repeat 3 2 1)
---                (case Matrix.fromList [List.repeat 21 3, List.repeat 21 5] of Just v -> v)
---          of Just v -> v
+main =
+  Matrix.Extra.prettyPrint
+    (case Matrix.concatHorizontal
+      (Matrix.repeat 3 2 1)
+      (case Matrix.fromList [List.repeat 21 3, List.repeat 21 5] of
+        Just v -> v
+        Nothing -> Debug.crash "List could not be converted into Matrix") of
+
+      Just v -> v
+      Nothing -> Debug.crash "`concatHorizontal` failed")

@@ -1,5 +1,5 @@
 {
-    "version": "3.0.0",
+    "version": "3.0.2",
     "summary": "A matrix implemention in Elm using flat-arrays",
     "repository": "https://github.com/eeue56/elm-flat-matrix.git",
     "license": "BSD3",

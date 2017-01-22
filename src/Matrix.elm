@@ -99,7 +99,13 @@ repeat x y v =
 {-|
   Create a matrix from a list of lists.
   If the lists within the list are not consistently sized, return `Nothing`
-  Otherwise return a matrix with the size as the size of the outer and nested lists
+  Otherwise return a matrix with the size as the size of the outer and nested lists.
+  The outer list represents the y axis and inner lists represent the x axis.
+  Eg:
+      [ [ {x=0, y=0}, {x=1, y=0}, {x=2, y=0} ]
+      , [ {x=0, y=1}, {x=1, y=1}, {x=2, y=1} ]
+      , [ {x=0, y=2}, {x=1, y=2}, {x=2, y=2} ]
+      ]
 -}
 fromList : List (List a) -> Maybe (Matrix a)
 fromList list =

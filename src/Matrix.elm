@@ -167,7 +167,7 @@ getRow j matrix =
             Just <| Array.slice start end matrix.data
 
 
-{-| Get a row at a given i
+{-| Get a column at a given i
 -}
 getColumn : Int -> Matrix a -> Maybe (Array a)
 getColumn i matrix =

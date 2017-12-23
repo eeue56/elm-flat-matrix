@@ -1,12 +1,10 @@
 module Tests exposing (..)
 
-import Element exposing (..)
-import Test exposing (test, Test, describe)
+import Array.Hamt as Array
 import Expect exposing (equal)
-import Array
 import Matrix
 import Matrix.Extra
-import Html exposing (Html)
+import Test exposing (Test, describe, test)
 
 
 unpackMaybeSize : List (List a) -> ( Int, Int )
@@ -30,11 +28,11 @@ fromList =
             \() ->
                 equal ( 2, 2 ) <|
                     unpackMaybeSize [ [ 1, 1 ], [ 1, 1 ] ]
-        , test "inequal size" <|
+        , test "1: inequal size" <|
             \() ->
                 equal ( 2, 3 ) <|
                     unpackMaybeSize [ [ 1, 1 ], [ 1, 1 ], [ 3, 3 ] ]
-        , test "inequal size" <|
+        , test "2: inequal size" <|
             \() ->
                 equal ( 3, 2 ) <|
                     unpackMaybeSize [ [ 1, 1, 1 ], [ 1, 1, 1 ] ]
@@ -91,7 +89,7 @@ get =
                             Matrix.fromList [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
         , test "non-square get invalid 2x3" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.get 3 1 <|
                         Maybe.withDefault Matrix.empty (Matrix.fromList [ [ 1, 2, 3 ], [ 4, 5, 6 ] ])
         , test "non-square get last 3x2" <|
@@ -104,23 +102,23 @@ get =
                 equal (Just 1) <|
                     Matrix.get 0 3 <|
                         Maybe.withDefault Matrix.empty (Matrix.fromList [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ], [ 1, 2 ], [ 3, 4 ], [ 5, 6 ] ])
-        , test "square get from a bigger matrix (500 x 500)" <|
+        , test "1: square get from a bigger matrix (500 x 500)" <|
             \() ->
                 equal (Just 1) <|
                     Matrix.get 24 50 <|
                         Matrix.repeat 500 500 1
-        , test "square get from a bigger matrix (500 x 500)" <|
+        , test "2: square get from a bigger matrix (500 x 500)" <|
             \() ->
                 equal (Just 1) <|
                     Matrix.get 67 124 <|
                         Matrix.repeat 500 500 1
-        , test "square get from a huge matrix (500 x 500)" <|
+        , test "3: square get from a huge matrix (500 x 500)" <|
             \() ->
                 equal (Just 567) <|
                     Matrix.get 24 50 <|
                         Matrix.set 24 50 567 <|
                             Matrix.repeat 500 500 1
-        , test "square get from a huge matrix (500 x 500)" <|
+        , test "4: square get from a huge matrix (500 x 500)" <|
             \() ->
                 equal (Just 567) <|
                     Matrix.get 399 432 <|
@@ -128,17 +126,17 @@ get =
                             Matrix.repeat 500 500 1
         , test "square get invalid range y too big" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.get 1 2 <|
                         Matrix.repeat 1 1 1
         , test "square get invalid range x too small" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.get -1 2 <|
                         Matrix.repeat 1 1 1
         , test "square get invalid range y too small" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.get 1 -2 <|
                         Matrix.repeat 1 1 1
         ]
@@ -169,12 +167,12 @@ getRow =
                         Maybe.withDefault Matrix.empty (Matrix.fromList [ [ 2, 3, 4 ], [ 1, 1, 5 ] ])
         , test "square get invalid range" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.getRow 5 <|
                         Matrix.repeat 1 1 1
         , test "non-square get invalid range" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.getRow 5 <|
                         Matrix.repeat 1 5 1
         ]
@@ -215,7 +213,7 @@ getColumn =
                         Maybe.withDefault Matrix.empty (Matrix.fromList [ [ 2, 3, 3 ], [ 1, 6, 9 ] ])
         , test "get invalid range" <|
             \() ->
-                equal (Nothing) <|
+                equal Nothing <|
                     Matrix.getColumn 5 <|
                         Matrix.repeat 1 1 1
         ]
@@ -255,7 +253,7 @@ set =
         , test "Set with negative index does nothing" <|
             \() ->
                 equal (Matrix.repeat 3 3 1) <|
-                    Matrix.set (-1) 2 0 <|
+                    Matrix.set -1 2 0 <|
                         Matrix.repeat 3 3 1
         ]
 
@@ -311,7 +309,7 @@ indexedMap =
                 equal (Maybe.withDefault Matrix.empty (Matrix.fromList [ [ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ) ], [ ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ], [ ( 0, 2 ), ( 1, 2 ), ( 2, 2 ) ] ])) <|
                     Matrix.indexedMap (\x y _ -> ( x, y )) <|
                         Matrix.repeat 3 3 1
-        , test "non-square (x,y) -> (x, y)" <|
+        , test "1: non-square (x,y) -> (x, y)" <|
             \() ->
                 equal (Maybe.withDefault Matrix.empty (Matrix.fromList [ [ ( 0, 0 ), ( 1, 0 ) ], [ ( 0, 1 ), ( 1, 1 ) ], [ ( 0, 2 ), ( 1, 2 ) ] ])) <|
                     Matrix.indexedMap (\x y _ -> ( x, y )) <|
@@ -321,7 +319,7 @@ indexedMap =
                 equal (Maybe.withDefault Matrix.empty (Matrix.fromList [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ] ])) <|
                     Matrix.indexedMap (\x y _ -> x + y) <|
                         Matrix.repeat 2 3 1
-        , test "non-square (x,y) -> (x, y)" <|
+        , test "2: non-square (x,y) -> (x, y)" <|
             \() ->
                 equal (Maybe.withDefault Matrix.empty (Matrix.fromList [ [ ( 0, 0 ), ( 1, 0 ), ( 2, 0 ) ], [ ( 0, 1 ), ( 1, 1 ), ( 2, 1 ) ] ])) <|
                     Matrix.indexedMap (\x y _ -> ( x, y )) <|
@@ -363,28 +361,28 @@ toIndexedArray =
             , ( ( 1, 2 ), 1 )
             ]
     in
-        describe "toIndexedArray"
-            [ test "(x,y) -> ((x, y), x + y) for non-square 2x3" <|
-                \() ->
-                    equal twoByThreeXAndY <|
-                        Array.toList <|
-                            Matrix.toIndexedArray <|
-                                Matrix.indexedMap (\x y _ -> x + y) <|
-                                    Matrix.repeat 2 3 1
-            , test "(x,y) -> ((x, y), x + y) for non-square 2x3" <|
-                \() ->
-                    equal twoByThreeOnes <|
-                        Array.toList <|
-                            Matrix.toIndexedArray <|
+    describe "toIndexedArray"
+        [ test "1: (x,y) -> ((x, y), x + y) for non-square 2x3" <|
+            \() ->
+                equal twoByThreeXAndY <|
+                    Array.toList <|
+                        Matrix.toIndexedArray <|
+                            Matrix.indexedMap (\x y _ -> x + y) <|
                                 Matrix.repeat 2 3 1
-            , test "(x,y) -> ((x, y), x + y) for square 3x3" <|
-                \() ->
-                    equal threeByThreeXAndY <|
-                        Array.toList <|
-                            Matrix.toIndexedArray <|
-                                Matrix.indexedMap (\x y _ -> x + y) <|
-                                    Matrix.repeat 3 3 1
-            ]
+        , test "2: (x,y) -> ((x, y), x + y) for non-square 2x3" <|
+            \() ->
+                equal twoByThreeOnes <|
+                    Array.toList <|
+                        Matrix.toIndexedArray <|
+                            Matrix.repeat 2 3 1
+        , test "(x,y) -> ((x, y), x + y) for square 3x3" <|
+            \() ->
+                equal threeByThreeXAndY <|
+                    Array.toList <|
+                        Matrix.toIndexedArray <|
+                            Matrix.indexedMap (\x y _ -> x + y) <|
+                                Matrix.repeat 3 3 1
+        ]
 
 
 filter : Test
@@ -500,13 +498,13 @@ neighbours =
                     List.sum <|
                         Matrix.Extra.neighbours 1 1 <|
                             Matrix.repeat 3 3 1
-        , test "neighbours of square matrix in the bottom middle" <|
+        , test "1: neighbours of square matrix in the bottom middle" <|
             \() ->
                 equal 5 <|
                     List.sum <|
                         Matrix.Extra.neighbours 0 1 <|
                             Matrix.repeat 3 3 1
-        , test "neighbours of square matrix in the bottom middle" <|
+        , test "2: neighbours of square matrix in the bottom middle" <|
             \() ->
                 equal [ 1, 1, 1 ] <|
                     Matrix.Extra.neighbours 0 0 <|
@@ -516,7 +514,7 @@ neighbours =
 
 all : Test
 all =
-    describe "Tests"
+    describe "AllTests"
         [ get
         , getRow
         , getColumn
